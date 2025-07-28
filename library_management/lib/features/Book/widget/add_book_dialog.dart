@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:library_management/design/app_colors.dart';
 import 'package:library_management/design/text_style.dart';
-import 'package:library_management/features/Member/model/create_member_model.dart';
+import 'package:library_management/features/Book/model/create_book_model.dart';
 
-Future<CreateMemberModel?> addMemberDialog(BuildContext context) {
+Future<CreateBookModel?> addBookDialog(BuildContext context) {
   return showDialog(
     context: context,
     builder: (BuildContext context) {
-      return AddMemberDialog();
+      return AddBookDialog();
     },
   );
 }
 
-class AddMemberDialog extends StatefulWidget {
-  const AddMemberDialog({super.key});
+class AddBookDialog extends StatefulWidget {
+  const AddBookDialog({super.key});
 
   @override
-  State<AddMemberDialog> createState() => _AddMemberDialogState();
+  State<AddBookDialog> createState() => _AddBookDialogState();
 }
 
-class _AddMemberDialogState extends State<AddMemberDialog> {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
+class _AddBookDialogState extends State<AddBookDialog> {
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController authorController = TextEditingController();
+  final TextEditingController isbnController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +43,7 @@ class _AddMemberDialogState extends State<AddMemberDialog> {
                 border: Border.all(width: 1.5, color: navBarIconColor),
               ),
               child: TextField(
-                controller: nameController,
+                controller: titleController,
                 minLines: 2,
                 maxLines: 3,
                 autofocus: true,
@@ -54,7 +55,7 @@ class _AddMemberDialogState extends State<AddMemberDialog> {
                   border: InputBorder.none,
                   isDense: true,
                   contentPadding: EdgeInsets.all(8),
-                  hintText: 'Name',
+                  hintText: 'title',
                   hintStyle: Theme.of(
                     context,
                   ).textTheme.bodyMedium!.copyWith(color: navBarIconColor),
@@ -72,7 +73,7 @@ class _AddMemberDialogState extends State<AddMemberDialog> {
                 border: Border.all(width: 1.5, color: navBarIconColor),
               ),
               child: TextField(
-                controller: emailController,
+                controller: authorController,
                 minLines: 2,
                 maxLines: 3,
                 autofocus: true,
@@ -84,7 +85,7 @@ class _AddMemberDialogState extends State<AddMemberDialog> {
                   border: InputBorder.none,
                   isDense: true,
                   contentPadding: EdgeInsets.all(8),
-                  hintText: 'email@example.com',
+                  hintText: 'author',
                   hintStyle: Theme.of(
                     context,
                   ).textTheme.bodyMedium!.copyWith(color: navBarIconColor),
@@ -94,25 +95,55 @@ class _AddMemberDialogState extends State<AddMemberDialog> {
                 ).textTheme.bodyMedium!.copyWith(height: 1.5),
               ),
             ),
-
+            SizedBox(height: 5),
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(width: 1.5, color: navBarIconColor),
+              ),
+              child: TextField(
+                controller: isbnController,
+                minLines: 2,
+                maxLines: 3,
+                autofocus: true,
+                onChanged: (value) {
+                  setState(() {});
+                },
+                textDirection: TextDirection.ltr,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  isDense: true,
+                  contentPadding: EdgeInsets.all(8),
+                  hintText: 'ISBN',
+                  hintStyle: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium!.copyWith(color: navBarIconColor),
+                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium!.copyWith(height: 1.5),
+              ),
+            ),
             SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
                   child: Material(
                     borderRadius: BorderRadius.circular(8),
-                    color: nameController.text.isEmpty
+                    color: titleController.text.isEmpty
                         ? navBarIconColor
                         : primaryColor,
                     child: InkWell(
-                      onTap: nameController.text.isEmpty
+                      onTap: titleController.text.isEmpty
                           ? null
                           : () async {
                               Navigator.pop(
                                 context,
-                                CreateMemberModel(
-                                  name: nameController.text,
-                                  email: emailController.text,
+                                CreateBookModel(
+                                  title: titleController.text,
+                                  author: authorController.text,
+                                  isbn: isbnController.text,
                                 ),
                               );
                             },
@@ -121,7 +152,7 @@ class _AddMemberDialogState extends State<AddMemberDialog> {
                         height: 35,
                         child: Center(
                           child: Text(
-                            "Add Member",
+                            "Add Book",
                             style: titleSmallDark.copyWith(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,

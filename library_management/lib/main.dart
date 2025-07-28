@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:library_management/injection/injection_container.dart' as di;
-import 'package:library_management/pages/main_navbar_page.dart';
+import 'package:library_management/features/main_navbar_page.dart';
 
 void main() async {
   await di.init();

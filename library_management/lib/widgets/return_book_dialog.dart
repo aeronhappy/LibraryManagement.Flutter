@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:library_management/bloc/book/book_bloc.dart';
 import 'package:library_management/design/app_colors.dart';
 import 'package:library_management/design/text_style.dart';
-import 'package:library_management/model/member_model.dart';
+import 'package:library_management/features/Book/bloc/book/book_bloc.dart';
+import 'package:library_management/features/Member/model/member_model.dart';
 import 'package:library_management/types/book_filter_types.dart';
 
 Future<List<String>?> returnBookDialog(
