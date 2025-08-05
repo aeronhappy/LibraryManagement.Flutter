@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:library_management/design/app_colors.dart';
 import 'package:library_management/design/text_style.dart';
-import 'package:library_management/features/authentication/bloc/auth/auth_bloc.dart';
-import 'package:library_management/features/authentication/model/request/login_request.dart';
-import 'package:library_management/features/authentication/widget/auth_snackbar.dart';
+import 'package:library_management/features/Auth/bloc/auth/auth_bloc.dart';
+import 'package:library_management/features/Auth/model/request/login_request.dart';
+import 'package:library_management/features/Auth/widget/auth_snackbar.dart';
+import 'package:library_management/router/router_type.dart';
 
 class AuthenticationPage extends StatefulWidget {
   const AuthenticationPage({super.key});
@@ -19,11 +20,6 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
   bool obsecureText = true;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
@@ -31,8 +27,14 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
   }
 
   Widget loginButton() {
+    final isEmailValid = RegExp(
+      r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
+    ).hasMatch(emailController.text.trim());
+
     final isDisabled =
-        emailController.text.isEmpty || passwordController.text.isEmpty;
+        emailController.text.isEmpty ||
+        passwordController.text.isEmpty ||
+        !isEmailValid;
 
     return Material(
       borderRadius: BorderRadius.circular(8),
@@ -61,7 +63,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
 
   Widget emailTextBox() => Container(
     alignment: Alignment.center,
-    height: 45,
+    height: 40,
     padding: const EdgeInsets.only(left: 10),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(8),
@@ -96,7 +98,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
 
   Widget passwordTextBox() => Container(
     alignment: Alignment.center,
-    height: 45,
+    height: 40,
     padding: const EdgeInsets.only(left: 10),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(8),
@@ -131,23 +133,19 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<AuthBloc, AuthState>(
-          listener: (context, state) {
-            if (state is LoadingAuth) {
-              showLoggingInSnackbar(context);
-            } else if (state is SuccessLogin) {
-              showLoginSuccessSnackbar(context);
-            } else if (state is FailedAuth) {
-              showLoginFailedSnackbar(context);
-            }
-          },
-        ),
-      ],
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is LoadingAuth) {
+          showLoggingInSnackbar(context, false);
+        } else if (state is FailedAuth) {
+          showLoginFailedSnackbar(context, state.message);
+        } else if (state is SuccessAuth) {
+          showLoginSuccessSnackbar(context);
+          Navigator.pushReplacementNamed(context, PageRouter.mainNavbarPage);
+        }
+      },
       child: Scaffold(
-        resizeToAvoidBottomInset:
-            true, // ✅ resizes layout when keyboard appears
+        resizeToAvoidBottomInset: true,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: SafeArea(
           child: LayoutBuilder(
@@ -175,49 +173,66 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height * .1,
-                          ),
                           Center(
                             child: Image.asset(
-                              "assets/icon/logo_clear_bg.png",
-                              height: 120,
-                              width: 120,
+                              "assets/logo/library_logo.png",
+                              width: 300,
+                              fit: BoxFit.fitWidth,
                             ),
                           ),
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height * .08,
-                          ),
+
                           Text(
                             "Email",
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           emailTextBox(),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 10),
                           Text(
                             "Password",
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           passwordTextBox(),
-                          const SizedBox(height: 40),
+                          const SizedBox(height: 20),
                           loginButton(),
-                          const Spacer(),
-                          Center(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  "Powered by:",
-                                  style: titleSmallLight.copyWith(
-                                    color: navBarIconColor,
-                                    fontSize: 12,
+                          SizedBox(height: 10),
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Not yet register?",
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.labelMedium!.copyWith(fontSize: 14),
+                              ),
+                              SizedBox(width: 5),
+                              InkWell(
+                                borderRadius: BorderRadius.circular(20),
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    PageRouter.registerPage,
+                                  );
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 2,
+                                  ),
+                                  child: Text(
+                                    "Register Now",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall!
+                                        .copyWith(
+                                          color: Theme.of(context).primaryColor,
+                                          fontSize: 14,
+                                        ),
                                   ),
                                 ),
-                                const SizedBox(width: 10),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 20),
                         ],
                       ),
                     ),

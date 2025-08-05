@@ -6,11 +6,9 @@ import 'package:library_management/features/Member/bloc/member/member_bloc.dart'
 import 'package:library_management/features/Member/bloc/member_controller/member_controller_bloc.dart';
 import 'package:library_management/design/app_colors.dart';
 import 'package:library_management/features/Book/page/book_page.dart';
-import 'package:library_management/features/authentication/bloc/auth/auth_bloc.dart';
-import 'package:library_management/features/authentication/bloc/role/role_bloc.dart';
-import 'package:library_management/features/authentication/page/authentication_page.dart';
 import 'package:library_management/injection/injection_container.dart';
 import 'package:library_management/features/Member/page/member_page.dart';
+import 'package:library_management/router/router_type.dart';
 
 class MainNavbarPage extends StatefulWidget {
   const MainNavbarPage({super.key});
@@ -26,20 +24,21 @@ class _MainNavbarPageState extends State<MainNavbarPage> {
 
   IconData navbarIcon(int index) {
     if (index == 0) return Icons.menu_book_rounded;
-    if (index == 1) return Icons.login;
-    return Icons.group;
+    if (index == 1) return Icons.group;
+    return Icons.logout_rounded;
   }
 
   String navbarText(int index) {
     if (index == 0) return "Books";
-    if (index == 1) return "Login";
-    return "Members";
+    if (index == 1) return "Members";
+    return "Logout";
   }
 
   @override
   void initState() {
     super.initState();
     pageController = PageController(initialPage: selectedIndex);
+    context.read<MemberBloc>().add(GetMyProfile());
   }
 
   @override
@@ -95,18 +94,43 @@ class _MainNavbarPageState extends State<MainNavbarPage> {
                                   ),
                                   if (isExtended) SizedBox(width: 10),
                                   if (isExtended)
-                                    Text(
-                                      "Library Management",
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.titleSmall,
+                                    BlocBuilder<MemberBloc, MemberState>(
+                                      builder: (context, state) {
+                                        if (state is LoadedMember) {
+                                          return Column(
+                                            mainAxisSize: MainAxisSize.max,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                state.member.name,
+                                                style: Theme.of(
+                                                  context,
+                                                ).textTheme.titleSmall,
+                                              ),
+                                              Text(
+                                                state.member.email,
+                                                style: Theme.of(
+                                                  context,
+                                                ).textTheme.labelLarge,
+                                              ),
+                                            ],
+                                          );
+                                        }
+                                        return Text(
+                                          "Library Management",
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.titleSmall,
+                                        );
+                                      },
                                     ),
                                 ],
                               ),
                             ),
                           ),
                           Divider(color: navBarIconColor, thickness: 1),
-                          ...List.generate(3, (index) {
+                          ...List.generate(2, (index) {
                             return Stack(
                               children: [
                                 NavBarButtonWidget(
@@ -131,6 +155,18 @@ class _MainNavbarPageState extends State<MainNavbarPage> {
                         ],
                       ),
                       Spacer(),
+                      NavBarButtonWidget(
+                        isSelected: false,
+                        isExtended: isExtended,
+                        imageAsset: navbarIcon(2),
+                        navbarText: navbarText(2),
+                        function: () {
+                          Navigator.pushReplacementNamed(
+                            context,
+                            PageRouter.authenticationPage,
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -152,13 +188,7 @@ class _MainNavbarPageState extends State<MainNavbarPage> {
                     ],
                     child: BookPage(),
                   ),
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(create: (context) => sl<AuthBloc>()),
-                      BlocProvider(create: (context) => sl<RoleBloc>()),
-                    ],
-                    child: AuthenticationPage(),
-                  ),
+
                   MultiBlocProvider(
                     providers: [
                       BlocProvider(create: (context) => sl<MemberBloc>()),

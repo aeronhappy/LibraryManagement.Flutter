@@ -3,14 +3,14 @@ import 'package:library_management/design/app_colors.dart';
 import 'package:library_management/design/text_style.dart';
 import 'package:library_management/widgets/snackbar_template.dart';
 
-void showLoggingInSnackbar(BuildContext context) {
+void showLoggingInSnackbar(BuildContext context, bool isCreating) {
   showTopSnackbar(
     context,
     Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Logging in...',
+          isCreating ? 'Creating ...' : 'Logging in...',
           style: titleSmallDark.copyWith(
             fontWeight: FontWeight.w400,
             fontSize: 15,
@@ -20,7 +20,7 @@ void showLoggingInSnackbar(BuildContext context) {
           height: 20,
           width: 20,
           child: CircularProgressIndicator(
-            color: darkCardColor,
+            color: Colors.white,
             strokeWidth: 1.5,
           ),
         ),
@@ -52,7 +52,7 @@ void showLoginSuccessSnackbar(BuildContext context) {
   );
 }
 
-void showLoginFailedSnackbar(BuildContext context) {
+void showLoginFailedSnackbar(BuildContext context, String msg) {
   showTopSnackbar(
     context,
     Row(
@@ -69,7 +69,12 @@ void showLoginFailedSnackbar(BuildContext context) {
                 fontSize: 15,
               ),
             ),
-            Text('Please try again.', style: labelLargeDark),
+            Text(
+              msg,
+              style: labelLargeDark,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
           ],
         ),
         Icon(Icons.error_outline_rounded, size: 20, color: Colors.white),

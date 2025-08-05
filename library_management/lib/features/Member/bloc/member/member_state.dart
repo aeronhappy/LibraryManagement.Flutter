@@ -11,4 +11,9 @@ class LoadedMembers extends MemberState {
   LoadedMembers({required this.members});
 }
 
+class LoadedMember extends MemberState {
+  final MemberModel member;
+  LoadedMember({required this.member});
+}
+
 class FailedMembers extends MemberState {}

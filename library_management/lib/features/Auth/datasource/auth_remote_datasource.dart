@@ -1,9 +1,9 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
-import 'package:library_management/features/authentication/model/auth_response_model.dart';
-import 'package:library_management/features/authentication/model/request/login_request.dart';
-import 'package:library_management/features/authentication/model/request/register_request.dart';
-import 'package:library_management/features/authentication/model/role_model.dart';
+import 'package:library_management/features/Auth/model/auth_response_model.dart';
+import 'package:library_management/features/Auth/model/request/login_request.dart';
+import 'package:library_management/features/Auth/model/request/register_request.dart';
+import 'package:library_management/features/Auth/model/role_model.dart';
 import 'package:library_management/helper/api_provider.dart';
 
 abstract class IAuthRemoteDatasource {
@@ -49,10 +49,12 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return AuthResponseModel.fromJson(response.data);
       } else {
-        throw Exception("Failed to register account");
+        return AuthResponseModel.fromJson(response.data);
       }
     } on DioException catch (e) {
-      log("CreateAccount Error: ${e.response?.data ?? e.message}");
+      if (e.response != null) {
+        return AuthResponseModel.fromJson(e.response!.data);
+      }
       rethrow;
     }
   }
@@ -68,10 +70,12 @@ class AuthRemoteDatasource implements IAuthRemoteDatasource {
       if (response.statusCode == 200) {
         return AuthResponseModel.fromJson(response.data);
       } else {
-        throw Exception("Login failed");
+        return AuthResponseModel.fromJson(response.data);
       }
     } on DioException catch (e) {
-      log("LoginAccount Error: ${e.response?.data ?? e.message}");
+      if (e.response != null) {
+        return AuthResponseModel.fromJson(e.response!.data);
+      }
       rethrow;
     }
   }

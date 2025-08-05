@@ -6,6 +6,7 @@ import 'package:library_management/helper/api_provider.dart';
 
 abstract class IMemberRemoteDatasource {
   Future<List<MemberModel>> getMembers(String searchText);
+  Future<MemberModel?> getMyMemberProfile();
 
   Future<MemberModel?> addMember(CreateMemberModel createMemberModel);
   Future<void> deleteMember(String memberId);
@@ -34,6 +35,22 @@ class MemberRemoteDatasource implements IMemberRemoteDatasource {
     } on DioException catch (e) {
       log(e.response!.data.toString());
       return [];
+    }
+  }
+
+  @override
+  Future<MemberModel?> getMyMemberProfile() async {
+    try {
+      Response response = await apiProvider.client.get("/api/members/me");
+
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        return MemberModel.fromJson(data);
+      }
+      return null;
+    } on DioException catch (e) {
+      log(e.response.toString());
+      return null;
     }
   }
 

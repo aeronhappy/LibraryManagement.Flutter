@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 /// App Colory
 
-Color primaryColor = const Color(0xff66BB6C);
+Color primaryColor = const Color(0xff134b4a);
+Color secondaryColor = const Color(0xff9ad0c3);
 Color navBarIconColor = const Color(0xffC2C2C2);
 Color successColor = const Color(0xffD9F7BE);
 Color errorColor = const Color(0xffc62828);

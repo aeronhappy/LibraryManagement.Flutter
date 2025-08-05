@@ -14,5 +14,16 @@ class MemberBloc extends Bloc<MemberEvent, MemberState> {
       );
       emit(LoadedMembers(members: members));
     });
+
+    on<GetMyProfile>((event, emit) async {
+      try {
+        emit(LoadingMembers());
+        MemberModel? myProfile = await memberRemoteDatasource
+            .getMyMemberProfile();
+        emit(LoadedMember(member: myProfile!));
+      } catch (e) {
+        emit(FailedMembers());
+      }
+    });
   }
 }

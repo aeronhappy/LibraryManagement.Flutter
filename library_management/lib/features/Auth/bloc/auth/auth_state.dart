@@ -11,12 +11,7 @@ class FailedAuth extends AuthState {
   FailedAuth({required this.message});
 }
 
-class AccountCreated extends AuthState {
+class SuccessAuth extends AuthState {
   AuthResponseModel authResponseModel;
-  AccountCreated({required this.authResponseModel});
-}
-
-class SuccessLogin extends AuthState {
-  AuthResponseModel authResponseModel;
-  SuccessLogin({required this.authResponseModel});
+  SuccessAuth({required this.authResponseModel});
 }
