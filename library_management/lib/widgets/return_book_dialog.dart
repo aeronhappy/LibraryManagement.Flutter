@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:library_management/design/app_colors.dart';
 import 'package:library_management/design/text_style.dart';
 import 'package:library_management/features/Book/bloc/book/book_bloc.dart';
+import 'package:library_management/features/BorrowingRecord/model/borrowing_record_model.dart';
 import 'package:library_management/features/Member/model/member_model.dart';
 import 'package:library_management/types/book_filter_types.dart';
 
@@ -65,6 +66,12 @@ class _ReturnBookDialogState extends State<ReturnBookDialog> {
                       .clamp(1, 7);
                   double spacing = 15.0;
 
+                  final List<BorrowingRecordModel> currentlyBorrowed = widget
+                      .membermodel
+                      .borrowingHistory
+                      .where((record) => record.dateReturned == null)
+                      .toList();
+
                   return GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: crossAxisCount,
@@ -72,9 +79,9 @@ class _ReturnBookDialogState extends State<ReturnBookDialog> {
                       crossAxisSpacing: spacing,
                       mainAxisExtent: 220,
                     ),
-                    itemCount: widget.membermodel.borrowedBooks.length,
+                    itemCount: widget.membermodel.borrowedBooksCount,
                     itemBuilder: (context, index) {
-                      var book = widget.membermodel.borrowedBooks[index];
+                      var book = currentlyBorrowed[index].book!;
                       return Material(
                         elevation: 0.5,
                         borderRadius: BorderRadius.circular(12),

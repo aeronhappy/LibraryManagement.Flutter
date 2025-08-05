@@ -10,10 +10,6 @@ abstract class IBookRemoteDatasource {
 
   Future<BookModel?> addBook(String title, String author, String isbn);
   Future<void> deleteBook(String bookId);
-
-  Future<void> borrowBook(String memberId, String bookId);
-
-  Future<void> returnBook(String memberId, String bookId);
 }
 
 class BookRemoteDatasource implements IBookRemoteDatasource {
@@ -109,28 +105,6 @@ class BookRemoteDatasource implements IBookRemoteDatasource {
   Future<void> deleteBook(String bookId) async {
     try {
       await apiProvider.client.delete("/api/books/$bookId");
-    } on DioException catch (e) {
-      log(e.response?.data.toString() ?? e.toString());
-    }
-  }
-
-  @override
-  Future<void> borrowBook(String memberId, String bookId) async {
-    try {
-      await apiProvider.client.post(
-        "/api/books/$bookId/borrow?memberId=$memberId",
-      );
-    } on DioException catch (e) {
-      log(e.response?.data.toString() ?? e.toString());
-    }
-  }
-
-  @override
-  Future<void> returnBook(String memberId, String bookId) async {
-    try {
-      await apiProvider.client.post(
-        "/api/books/$bookId/return?memberId=$memberId",
-      );
     } on DioException catch (e) {
       log(e.response?.data.toString() ?? e.toString());
     }

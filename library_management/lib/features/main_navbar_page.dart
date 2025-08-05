@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:library_management/features/Book/bloc/book/book_bloc.dart';
 import 'package:library_management/features/Book/bloc/book_controller/book_controller_bloc.dart';
+import 'package:library_management/features/BorrowingRecord/bloc/borrow/borrow_bloc.dart';
+import 'package:library_management/features/BorrowingRecord/page/borrow_record_page.dart';
 import 'package:library_management/features/Member/bloc/member/member_bloc.dart';
 import 'package:library_management/features/Member/bloc/member_controller/member_controller_bloc.dart';
 import 'package:library_management/design/app_colors.dart';
@@ -25,12 +27,14 @@ class _MainNavbarPageState extends State<MainNavbarPage> {
   IconData navbarIcon(int index) {
     if (index == 0) return Icons.menu_book_rounded;
     if (index == 1) return Icons.group;
+    if (index == 2) return Icons.receipt_rounded;
     return Icons.logout_rounded;
   }
 
   String navbarText(int index) {
     if (index == 0) return "Books";
     if (index == 1) return "Members";
+    if (index == 2) return "Borrowing Record";
     return "Logout";
   }
 
@@ -130,7 +134,7 @@ class _MainNavbarPageState extends State<MainNavbarPage> {
                             ),
                           ),
                           Divider(color: navBarIconColor, thickness: 1),
-                          ...List.generate(2, (index) {
+                          ...List.generate(3, (index) {
                             return Stack(
                               children: [
                                 NavBarButtonWidget(
@@ -158,8 +162,8 @@ class _MainNavbarPageState extends State<MainNavbarPage> {
                       NavBarButtonWidget(
                         isSelected: false,
                         isExtended: isExtended,
-                        imageAsset: navbarIcon(2),
-                        navbarText: navbarText(2),
+                        imageAsset: navbarIcon(3),
+                        navbarText: navbarText(3),
                         function: () {
                           Navigator.pushReplacementNamed(
                             context,
@@ -200,6 +204,13 @@ class _MainNavbarPageState extends State<MainNavbarPage> {
                       ),
                     ],
                     child: MemberPage(),
+                  ),
+
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(create: (context) => sl<BorrowBloc>()),
+                    ],
+                    child: BorrowRecordPage(),
                   ),
                 ],
               ),

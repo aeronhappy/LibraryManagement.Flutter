@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:library_management/features/Auth/auth_dependency_injection.dart';
+import 'package:library_management/features/BorrowingRecord/borrow_dependency_injection.dart';
 import 'package:library_management/helper/api_provider.dart';
 import 'package:library_management/features/Book/book_dependency_injection.dart';
 import 'package:library_management/features/Member/member_dependency_injection.dart';
@@ -18,4 +19,5 @@ Future<void> init() async {
   await registerAuth(sl);
   await registerBook(sl);
   await registerMember(sl);
+  await registerBorrowRecord(sl);
 }

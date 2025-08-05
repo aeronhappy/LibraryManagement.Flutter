@@ -5,7 +5,12 @@ import 'package:library_management/features/Book/bloc/book/book_bloc.dart';
 
 Future<void> registerBook(GetIt sl) async {
   sl.registerFactory(() => BookBloc(bookRemoteDatasource: sl()));
-  sl.registerFactory(() => BookControllerBloc(bookRemoteDatasource: sl()));
+  sl.registerFactory(
+    () => BookControllerBloc(
+      bookRemoteDatasource: sl(),
+      borrowingRemoteDatasource: sl(),
+    ),
+  );
 
   //RemoteDataSource
   sl.registerLazySingleton<IBookRemoteDatasource>(

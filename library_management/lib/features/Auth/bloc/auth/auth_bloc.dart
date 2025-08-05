@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:library_management/features/Auth/datasource/auth_remote_datasource.dart';
 import 'package:library_management/features/Auth/model/auth_response_model.dart';
@@ -23,6 +25,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         if (authResponse.isSuccess) {
           emit(SuccessAuth(authResponseModel: authResponse));
+          sharedPreferences.setString("MY_TOKEN", authResponse.accessToken!);
+          log(authResponse.accessToken!);
           return;
         }
 
@@ -41,6 +45,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (authResponse.isSuccess) {
           emit(SuccessAuth(authResponseModel: authResponse));
           sharedPreferences.setString("MY_TOKEN", authResponse.accessToken!);
+          log(authResponse.accessToken!);
           return;
         }
 

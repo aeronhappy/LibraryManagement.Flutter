@@ -1,4 +1,4 @@
-import 'package:library_management/features/Book/model/book_model.dart';
+import 'package:library_management/features/BorrowingRecord/model/borrowing_record_model.dart';
 
 class MemberModel {
   final String id;
@@ -6,7 +6,7 @@ class MemberModel {
   final String email;
   final int maxBooksAllowed;
   final int borrowedBooksCount;
-  final List<BookModel> borrowedBooks;
+  final List<BorrowingRecordModel> borrowingHistory;
 
   MemberModel({
     required this.id,
@@ -14,7 +14,7 @@ class MemberModel {
     required this.email,
     required this.maxBooksAllowed,
     required this.borrowedBooksCount,
-    this.borrowedBooks = const [],
+    this.borrowingHistory = const [],
   });
 
   factory MemberModel.fromJson(Map<String, dynamic> json) {
@@ -24,9 +24,11 @@ class MemberModel {
       email: json['email'] as String,
       maxBooksAllowed: json['maxBooksAllowed'] as int,
       borrowedBooksCount: json['borrowedBooksCount'] as int,
-      borrowedBooks:
-          (json['borrowedBooks'] as List<dynamic>?)
-              ?.map((e) => BookModel.fromJson(e as Map<String, dynamic>))
+      borrowingHistory:
+          (json['borrowingHistory'] as List<dynamic>?)
+              ?.map(
+                (e) => BorrowingRecordModel.fromJson(e as Map<String, dynamic>),
+              )
               .toList() ??
           [],
     );
@@ -39,7 +41,7 @@ class MemberModel {
       'email': email,
       'maxBooksAllowed': maxBooksAllowed,
       'borrowedBooksCount': borrowedBooksCount,
-      'borrowedBooks': borrowedBooks.map((e) => e.toJson()).toList(),
+      'borrowingHistory': borrowingHistory.map((e) => e.toJson()).toList(),
     };
   }
 }
