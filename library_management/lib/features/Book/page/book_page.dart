@@ -67,7 +67,7 @@ class _BookPageState extends State<BookPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Stack(
           children: [
             Padding(
@@ -79,6 +79,10 @@ class _BookPageState extends State<BookPage> {
                 children: [
                   Row(
                     children: [
+                      Text(
+                        "Book",
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
                       Spacer(),
                       Material(
                         color: primaryColor,
@@ -143,7 +147,7 @@ class _BookPageState extends State<BookPage> {
                           height: 45,
                           padding: EdgeInsets.symmetric(horizontal: 5),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
+                            color: navBarIconColor.withAlpha(50),
                             borderRadius: BorderRadius.circular(50),
                           ),
                           alignment: Alignment.center,

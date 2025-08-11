@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:library_management/design/app_colors.dart';
 import 'package:library_management/design/text_style.dart';
 import 'package:library_management/features/BorrowingRecord/bloc/borrow/borrow_bloc.dart';
+import 'package:library_management/types/borrow_records_filter_types.dart';
+import 'package:library_management/widgets/converter.dart';
 
 class BorrowRecordPage extends StatefulWidget {
   const BorrowRecordPage({super.key});
@@ -13,6 +15,8 @@ class BorrowRecordPage extends StatefulWidget {
 
 class _BorrowRecordPageState extends State<BorrowRecordPage> {
   TextEditingController searchTextController = TextEditingController();
+  BorrowRecordsFilterTypes selectedStatus = BorrowRecordsFilterTypes.all;
+
   @override
   void initState() {
     super.initState();
@@ -24,8 +28,16 @@ class _BorrowRecordPageState extends State<BorrowRecordPage> {
       GetAllBorrowingRecords(
         searchText: searchTextController.text,
         dateTime: null,
+        borrowRecordsFilterTypes: selectedStatus,
       ),
     );
+  }
+
+  void filteringBorrowRecords(BorrowRecordsFilterTypes status) {
+    setState(() {
+      selectedStatus = status;
+    });
+    refreshData();
   }
 
   Future<void> searchData() async {
@@ -36,7 +48,7 @@ class _BorrowRecordPageState extends State<BorrowRecordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           Padding(
@@ -45,13 +57,51 @@ class _BorrowRecordPageState extends State<BorrowRecordPage> {
               children: [
                 Row(
                   children: [
+                    Text(
+                      "Borrow History",
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
                     Spacer(),
+                    PopupMenuButton<BorrowRecordsFilterTypes>(
+                      borderRadius: BorderRadius.circular(45),
+                      tooltip: 'Filter Orders',
+                      onSelected: filteringBorrowRecords,
+                      child: Material(
+                        borderRadius: BorderRadius.circular(45),
+                        color: navBarIconColor.withAlpha(100),
+                        child: Container(
+                          height: 40,
+                          padding: EdgeInsets.only(left: 15, right: 5),
+                          child: Row(
+                            children: [
+                              Text(
+                                selectedStatus.bookFilterToString(),
+                                style: bodyLargeLight,
+                              ),
+                              Icon(Icons.arrow_drop_down),
+                            ],
+                          ),
+                        ),
+                      ),
+                      itemBuilder: (context) =>
+                          BorrowRecordsFilterTypes.values.map((status) {
+                            return PopupMenuItem<BorrowRecordsFilterTypes>(
+                              height: 35,
+                              value: status,
+                              child: Text(
+                                status.bookFilterToString(),
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            );
+                          }).toList(),
+                    ),
+                    SizedBox(width: 8),
                     Flexible(
                       child: Container(
                         height: 45,
                         padding: EdgeInsets.symmetric(horizontal: 5),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
+                          color: navBarIconColor.withAlpha(50),
                           borderRadius: BorderRadius.circular(50),
                         ),
                         alignment: Alignment.center,
@@ -61,7 +111,7 @@ class _BorrowRecordPageState extends State<BorrowRecordPage> {
                           textAlignVertical: TextAlignVertical.top,
                           onChanged: (value) => searchData(),
                           decoration: InputDecoration(
-                            hintText: 'Search book title or author . . .',
+                            hintText: 'Search book or user . . .',
                             hintStyle: bodyMediumLight.copyWith(
                               decoration: TextDecoration.none,
                               color: navBarIconColor,
@@ -89,81 +139,195 @@ class _BorrowRecordPageState extends State<BorrowRecordPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 20),
+                Container(
+                  height: 45,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: navBarIconColor.withAlpha(40),
+                  ),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 50,
+                        child: Center(
+                          child: Text(
+                            "No.",
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            "Borrower",
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            "Book",
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            "Borrow Date",
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            "Due / Status",
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            "Return Date",
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
                 Expanded(
                   child: BlocBuilder<BorrowBloc, BorrowState>(
                     builder: (context, state) {
                       if (state is LoadedBorrowRecord) {
-                        return LayoutBuilder(
-                          builder: (context, constraints) {
-                            double maxWidth = constraints.maxWidth;
-                            double desiredItemWidth = 200;
-                            int crossAxisCount = (maxWidth / desiredItemWidth)
-                                .floor()
-                                .clamp(1, 7);
-                            double spacing = 15.0;
-
-                            return GridView.builder(
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: crossAxisCount,
-                                    mainAxisSpacing: spacing,
-                                    crossAxisSpacing: spacing,
-                                    mainAxisExtent: 250,
-                                  ),
-                              itemCount: state.borrowingRecord.length,
-                              itemBuilder: (context, index) {
-                                var borrowRecord = state.borrowingRecord[index];
-                                return Stack(
-                                  children: [
-                                    Material(
-                                      elevation: 0.5,
-                                      borderRadius: BorderRadius.circular(12),
-                                      color: Colors.brown.withAlpha(120),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(20),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.max,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Expanded(
-                                              child: Center(
-                                                child: Container(
-                                                  padding: EdgeInsets.symmetric(
-                                                    horizontal: 15,
-                                                    vertical: 5,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          100,
-                                                        ),
-                                                    color: Colors.white,
-                                                  ),
-                                                  child: Text(
-                                                    borrowRecord.book!.title,
-                                                    style: headlineSmallLight
-                                                        .copyWith(fontSize: 22),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            Column(
-                                              children: [
-                                                Text(borrowRecord.book!.author),
-                                                Text(borrowRecord.book!.isbn),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
+                        return ListView.separated(
+                          separatorBuilder: (context, index) => Divider(
+                            thickness: .5,
+                            height: 5,
+                            color: navBarIconColor.withAlpha(100),
+                          ),
+                          itemCount: state.borrowingRecords.length,
+                          itemBuilder: (context, index) {
+                            var borrowRecord = state.borrowingRecords[index];
+                            return SizedBox(
+                              height: 50,
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 50,
+                                    child: Center(
+                                      child: Text(
+                                        "${index + 1}",
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium,
                                       ),
                                     ),
-                                  ],
-                                );
-                              },
+                                  ),
+                                  SizedBox(width: 20),
+                                  Expanded(
+                                    child: Center(
+                                      child: Text(
+                                        borrowRecord.borrower!.name,
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Center(
+                                      child: Text(
+                                        borrowRecord.book!.title,
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Center(
+                                      child: Text(
+                                        convertDateTimePH(
+                                          borrowRecord.dateBorrowed.toString(),
+                                        ),
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Center(
+                                      child: Text(
+                                        getDueInLabel(
+                                          borrowRecord.dateOverdue,
+                                          borrowRecord.dateReturned,
+                                        ),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!
+                                            .copyWith(
+                                              color: getReturnStatusColor(
+                                                borrowRecord.dateOverdue,
+                                                borrowRecord.dateReturned,
+                                                context,
+                                              ),
+                                            ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Center(
+                                      child: Text(
+                                        borrowRecord.dateReturned != null
+                                            ? convertDateTimePH(
+                                                borrowRecord.dateReturned
+                                                    .toString(),
+                                              )
+                                            : "———",
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              // Row(
+                              //   mainAxisSize: MainAxisSize.max,
+                              //   mainAxisAlignment:
+                              //       MainAxisAlignment.spaceBetween,
+                              //   children: [
+                              //     Text(borrowRecord.borrower!.name),
+                              //     Text(borrowRecord.book!.title),
+                              //     Text(
+                              //       convertDateTimePH(
+                              //         borrowRecord.dateBorrowed.toString(),
+                              //       ),
+                              //     ),
+                              //     Text(
+                              //       convertDurationToDueString(
+                              //         borrowRecord.dateOverdue,
+                              //       ),
+                              //     ),
+
+                              //     Text(
+                              //       borrowRecord.dateReturned != null
+                              //           ? convertDateTimePH(
+                              //               borrowRecord.dateBorrowed
+                              //                   .toString(),
+                              //             )
+                              //           : "Unreturn",
+                              //     ),
+                              //   ],
+                              // ),
                             );
                           },
                         );

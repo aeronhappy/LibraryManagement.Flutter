@@ -4,6 +4,7 @@ class MemberModel {
   final String id;
   final String name;
   final String email;
+  final String? profilePictureUrl;
   final int maxBooksAllowed;
   final int borrowedBooksCount;
   final List<BorrowingRecordModel> borrowingHistory;
@@ -12,6 +13,7 @@ class MemberModel {
     required this.id,
     required this.name,
     required this.email,
+    required this.profilePictureUrl,
     required this.maxBooksAllowed,
     required this.borrowedBooksCount,
     this.borrowingHistory = const [],
@@ -22,6 +24,9 @@ class MemberModel {
       id: json['id'] as String,
       name: json['name'] as String,
       email: json['email'] as String,
+      profilePictureUrl: json['profilePictureUrl'] != null
+          ? json['profilePictureUrl'] as String
+          : null,
       maxBooksAllowed: json['maxBooksAllowed'] as int,
       borrowedBooksCount: json['borrowedBooksCount'] as int,
       borrowingHistory:
@@ -39,6 +44,7 @@ class MemberModel {
       'id': id,
       'name': name,
       'email': email,
+      'profilePictureUrl': profilePictureUrl.toString(),
       'maxBooksAllowed': maxBooksAllowed,
       'borrowedBooksCount': borrowedBooksCount,
       'borrowingHistory': borrowingHistory.map((e) => e.toJson()).toList(),

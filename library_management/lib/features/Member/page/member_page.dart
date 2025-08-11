@@ -80,7 +80,7 @@ class _MemberPageState extends State<MemberPage> {
         ),
       ],
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Stack(
           children: [
             Padding(
@@ -92,6 +92,10 @@ class _MemberPageState extends State<MemberPage> {
                 children: [
                   Row(
                     children: [
+                      Text(
+                        "Member",
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
                       Spacer(),
                       Material(
                         color: primaryColor,
@@ -124,7 +128,7 @@ class _MemberPageState extends State<MemberPage> {
                           height: 45,
                           padding: EdgeInsets.symmetric(horizontal: 5),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
+                            color: navBarIconColor.withAlpha(50),
                             borderRadius: BorderRadius.circular(50),
                           ),
                           alignment: Alignment.center,
@@ -187,6 +191,9 @@ class _MemberPageState extends State<MemberPage> {
                                 itemCount: state.members.length,
                                 itemBuilder: (context, index) {
                                   var member = state.members[index];
+                                  var baseUrl = "http://localhost:5184";
+                                  var imageUrl =
+                                      "$baseUrl${member.profilePictureUrl}";
                                   return Stack(
                                     children: [
                                       Material(
@@ -204,12 +211,28 @@ class _MemberPageState extends State<MemberPage> {
                                             children: [
                                               Row(
                                                 children: [
-                                                  CircleAvatar(
-                                                    radius: 30,
-                                                    child: Icon(
-                                                      Icons.person_3_rounded,
-                                                      size: 30,
+                                                  Container(
+                                                    height: 50,
+                                                    width: 50,
+                                                    clipBehavior:
+                                                        Clip.antiAlias,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            50,
+                                                          ),
                                                     ),
+                                                    child:
+                                                        member.profilePictureUrl !=
+                                                            null
+                                                        ? Image.network(
+                                                            imageUrl,
+                                                            fit: BoxFit.cover,
+                                                          )
+                                                        : Image.asset(
+                                                            "assets/icon/profile_image.png",
+                                                            fit: BoxFit.cover,
+                                                          ),
                                                   ),
                                                   SizedBox(width: 10),
                                                   Column(

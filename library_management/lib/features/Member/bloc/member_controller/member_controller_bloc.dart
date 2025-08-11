@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:library_management/features/Member/datasource/member_remote_datesource.dart';
 import 'package:library_management/features/Member/model/create_member_model.dart';
@@ -18,6 +20,11 @@ class MemberControllerBloc
     on<DeleteMember>((event, emit) async {
       await memberRemoteDatasource.deleteMember(event.memberId);
       emit(MemberDeleted());
+    });
+
+    on<UpdateProfilePicture>((event, emit) async {
+      await memberRemoteDatasource.updateProfilePicture(event.imageFile);
+      emit(ProfilePictureChanged());
     });
   }
 }

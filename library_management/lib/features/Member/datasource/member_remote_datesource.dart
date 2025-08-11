@@ -1,12 +1,15 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:library_management/features/Member/model/create_member_model.dart';
 import 'package:library_management/features/Member/model/member_model.dart';
 import 'package:library_management/helper/api_provider.dart';
 
 abstract class IMemberRemoteDatasource {
-  Future<List<MemberModel>> getMembers(String searchText);
   Future<MemberModel?> getMyMemberProfile();
+  Future<void> updateProfilePicture(File imageFile);
+
+  Future<List<MemberModel>> getMembers(String searchText);
 
   Future<MemberModel?> addMember(CreateMemberModel createMemberModel);
   Future<void> deleteMember(String memberId);
@@ -77,6 +80,24 @@ class MemberRemoteDatasource implements IMemberRemoteDatasource {
   Future<void> deleteMember(String memberId) async {
     try {
       await apiProvider.client.delete("/api/members/$memberId");
+    } on DioException catch (e) {
+      log(e.response?.data.toString() ?? e.toString());
+    }
+  }
+
+  @override
+  Future<void> updateProfilePicture(File imageFile) async {
+    try {
+      final formData = FormData.fromMap({
+        "Image": await MultipartFile.fromFile(
+          imageFile.path,
+          filename: imageFile.path.split('/').last,
+        ),
+      });
+      await apiProvider.client.put(
+        "/api/members/profilePicture",
+        data: formData,
+      );
     } on DioException catch (e) {
       log(e.response?.data.toString() ?? e.toString());
     }

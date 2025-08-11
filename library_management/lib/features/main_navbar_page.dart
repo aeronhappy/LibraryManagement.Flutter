@@ -8,9 +8,12 @@ import 'package:library_management/features/Member/bloc/member/member_bloc.dart'
 import 'package:library_management/features/Member/bloc/member_controller/member_controller_bloc.dart';
 import 'package:library_management/design/app_colors.dart';
 import 'package:library_management/features/Book/page/book_page.dart';
+import 'package:library_management/features/Member/page/profile_setting_page.dart';
 import 'package:library_management/injection/injection_container.dart';
 import 'package:library_management/features/Member/page/member_page.dart';
 import 'package:library_management/router/router_type.dart';
+import 'package:library_management/themes/change_theme_button_widget.dart';
+import 'package:library_management/widgets/navbar_profile_widget.dart';
 
 class MainNavbarPage extends StatefulWidget {
   const MainNavbarPage({super.key});
@@ -28,13 +31,15 @@ class _MainNavbarPageState extends State<MainNavbarPage> {
     if (index == 0) return Icons.menu_book_rounded;
     if (index == 1) return Icons.group;
     if (index == 2) return Icons.receipt_rounded;
+    if (index == 3) return Icons.settings_rounded;
     return Icons.logout_rounded;
   }
 
   String navbarText(int index) {
     if (index == 0) return "Books";
     if (index == 1) return "Members";
-    if (index == 2) return "Borrowing Record";
+    if (index == 2) return "Borrowing Records";
+    if (index == 3) return "Settings";
     return "Logout";
   }
 
@@ -80,61 +85,11 @@ class _MainNavbarPageState extends State<MainNavbarPage> {
                                 vertical: 10,
                                 horizontal: 10,
                               ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Center(
-                                    child: Container(
-                                      height: 50,
-                                      width: 50,
-                                      clipBehavior: Clip.antiAlias,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(50),
-                                      ),
-                                      child: Container(),
-                                    ),
-                                  ),
-                                  if (isExtended) SizedBox(width: 10),
-                                  if (isExtended)
-                                    BlocBuilder<MemberBloc, MemberState>(
-                                      builder: (context, state) {
-                                        if (state is LoadedMember) {
-                                          return Column(
-                                            mainAxisSize: MainAxisSize.max,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                state.member.name,
-                                                style: Theme.of(
-                                                  context,
-                                                ).textTheme.titleSmall,
-                                              ),
-                                              Text(
-                                                state.member.email,
-                                                style: Theme.of(
-                                                  context,
-                                                ).textTheme.labelLarge,
-                                              ),
-                                            ],
-                                          );
-                                        }
-                                        return Text(
-                                          "Library Management",
-                                          style: Theme.of(
-                                            context,
-                                          ).textTheme.titleSmall,
-                                        );
-                                      },
-                                    ),
-                                ],
-                              ),
+                              child: NavbarProfileWidget(isExtend: isExtended),
                             ),
                           ),
                           Divider(color: navBarIconColor, thickness: 1),
-                          ...List.generate(3, (index) {
+                          ...List.generate(4, (index) {
                             return Stack(
                               children: [
                                 NavBarButtonWidget(
@@ -159,11 +114,16 @@ class _MainNavbarPageState extends State<MainNavbarPage> {
                         ],
                       ),
                       Spacer(),
+                      Divider(color: navBarIconColor, thickness: 1, height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: ChangeThemeButtonWidget(),
+                      ),
                       NavBarButtonWidget(
                         isSelected: false,
                         isExtended: isExtended,
-                        imageAsset: navbarIcon(3),
-                        navbarText: navbarText(3),
+                        imageAsset: navbarIcon(4),
+                        navbarText: navbarText(4),
                         function: () {
                           Navigator.pushReplacementNamed(
                             context,
@@ -212,6 +172,19 @@ class _MainNavbarPageState extends State<MainNavbarPage> {
                     ],
                     child: BorrowRecordPage(),
                   ),
+
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(create: (context) => sl<MemberBloc>()),
+                      BlocProvider(
+                        create: (context) => sl<MemberControllerBloc>(),
+                      ),
+                      BlocProvider(
+                        create: (context) => sl<BookControllerBloc>(),
+                      ),
+                    ],
+                    child: SettingPage(),
+                  ),
                 ],
               ),
             ),
@@ -256,7 +229,9 @@ class NavBarButtonWidget extends StatelessWidget {
             Icon(
               imageAsset,
               size: 26,
-              color: isSelected ? primaryColor : navBarIconColor,
+              color: isSelected
+                  ? Theme.of(context).primaryColor
+                  : navBarIconColor,
             ),
             if (isExtended) ...[
               SizedBox(width: 20),
@@ -265,7 +240,9 @@ class NavBarButtonWidget extends StatelessWidget {
                   navbarText,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontSize: 16,
-                    color: isSelected ? primaryColor : navBarIconColor,
+                    color: isSelected
+                        ? Theme.of(context).primaryColor
+                        : navBarIconColor,
                   ),
                 ),
               ),

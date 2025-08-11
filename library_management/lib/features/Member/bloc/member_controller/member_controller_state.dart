@@ -7,3 +7,5 @@ class MemberControllerInitial extends MemberControllerState {}
 final class MemberCreated extends MemberControllerState {}
 
 final class MemberDeleted extends MemberControllerState {}
+
+final class ProfilePictureChanged extends MemberControllerState {}

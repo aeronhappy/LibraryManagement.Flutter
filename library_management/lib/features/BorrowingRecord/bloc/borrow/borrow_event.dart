@@ -5,5 +5,10 @@ class BorrowEvent {}
 class GetAllBorrowingRecords extends BorrowEvent {
   final String searchText;
   final DateTime? dateTime;
-  GetAllBorrowingRecords({required this.searchText, required this.dateTime});
+  final BorrowRecordsFilterTypes borrowRecordsFilterTypes;
+  GetAllBorrowingRecords({
+    required this.searchText,
+    required this.dateTime,
+    required this.borrowRecordsFilterTypes,
+  });
 }
