@@ -2,23 +2,30 @@ class AuthResponseModel {
   final bool isSuccess;
   final String? accessToken;
   final String? message;
+  final List<String> roles;
 
-  AuthResponseModel({
+  const AuthResponseModel({
     required this.isSuccess,
-    required this.accessToken,
-    required this.message,
+    this.accessToken,
+    this.message,
+    required this.roles,
   });
 
   factory AuthResponseModel.fromJson(Map<String, dynamic> json) {
     return AuthResponseModel(
-      isSuccess: json['isSuccess'] as bool,
-      accessToken: json['accessToken'] != null
-          ? json['accessToken'] as String
-          : null,
-      message: json['message'] != null ? json['message'] as String : null,
+      isSuccess: (json['isSuccess'] as bool?) ?? false,
+      accessToken: json['accessToken'] as String?,
+      message: json['message'] as String?,
+      roles:
+          (json['roles'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+          const <String>[],
     );
   }
 
-  static AuthResponseModel fromMap(Map<String, dynamic> map) =>
-      AuthResponseModel.fromJson(map);
+  Map<String, dynamic> toJson() => {
+    'isSuccess': isSuccess,
+    'accessToken': accessToken,
+    'message': message,
+    'roles': roles,
+  };
 }
